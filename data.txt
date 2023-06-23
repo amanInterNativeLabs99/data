@@ -422,3 +422,95 @@
         "username": "986b9dfgyyqibam"
     }
 ]
+
+
+------------------------------------------------------------------
+  let fetchReviews = async () => {
+    try {
+      let response = await pb.collection('reviews').getList(1, 50, { expand: 'product_id,username' });
+      const records = response.items;
+      console.log("record=",records);
+      // const filteredData = {};
+      // records.forEach((review) => {
+      //   const productId = review.product_id;
+      //   const rating = review.Rating;
+      //   const username = review.expand.username.username;
+      
+      //   if (!filteredData[productId]) {
+      //     filteredData[productId] = [];
+      //   }
+      
+      //   filteredData[productId].push({ username, rating });
+      // });
+      // Object.entries(filteredData).forEach(([productId, reviews]) => {
+      //   console.log("Product ID:", productId);
+      //   console.log("Reviews:");
+      //   reviews.forEach((review) => {
+      //     console.log("Username:", review.username);
+      //     console.log("Rating:", review.rating);
+      //     console.log("-----------------------------");
+      //   });
+      // });
+      
+
+      
+      // Displaying the filtered data
+      // Object.entries(filteredData).forEach(([productId, reviews]) => {
+      //   console.log("Product ID:", productId);
+      //   console.log("Reviews:");
+      //   reviews.forEach((review) => {
+      //     console.log("Username:", review.username);
+      //     console.log("Rating:", review.rating);
+      //     console.log("-----------------------------");
+      //   });
+      // });
+      // ==================================================================
+      const filteredData = {};
+      records.forEach((review) => {
+        const productId = review.product_id;
+        const rating = review.Rating;
+        const username = review.expand.username.username;
+      
+        if (!filteredData[productId]) {
+          filteredData[productId] = [];
+        }
+      
+        filteredData[productId].push({ username, rating });
+      });
+      
+      // Calculating the average rating for each product_id
+      const averageRatings = {};
+      Object.entries(filteredData).forEach(([productId, reviews]) => {
+        const totalUsers = reviews.length;
+        let totalRating = 0;
+      
+        reviews.forEach((review) => {
+          totalRating += review.rating;
+        });
+      
+        const averageRating = totalRating / totalUsers;
+        averageRatings[productId] = averageRating;
+      });
+      
+      // Displaying the average ratings
+      let result = Object.entries(averageRatings).forEach(([productId, averageRating]) => {
+        console.log("Product ID:", productId);
+        console.log("Average Rating:", averageRating);
+        console.log("-----------------------------");
+      });
+      
+
+
+      // let response2 = await pb.collection('reviews').getList(1, 50,{ expand: 'product_id,username'}, { '$autoCancel': false });
+      // const records2 = response2.item
+
+      // console.log("expanding responce",records2)
+
+      // console.log("revieews1", records.map((item) => { item.expand.product_id, item.rating, item.expand.username.username }));
+      // console.log("productId", records.map((item) => item));
+      setReviews(records)
+    } catch (error) {
+      console.log("Error retrieving data:", error);
+      throw error;
+    }
+  }
