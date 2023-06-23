@@ -514,3 +514,65 @@
       throw error;
     }
   }
+
+==============================================================================
+  let fetchReviews = async () => {
+    try {
+      let response = await pb.collection('reviews').getList(1, 50, { expand: 'product_id,username' });
+      const records = response.items;
+      // Count the number of reviews per product
+      const productReviewsCount = {};
+      records.forEach((review) => {
+        const productId = review.product_id;
+        if (productReviewsCount[productId]) {
+          productReviewsCount[productId]++;
+        } else {
+          productReviewsCount[productId] = 1;
+        }
+      });
+      console.log("productReviewsCount=",productReviewsCount);
+      
+      // Filter reviews for products with multiple reviews
+      // const filteredReviews = reviews.filter((review) => {
+      //   const productId = review.product_id;
+      //   return productReviewsCount[productId] > 1;
+      // });
+      
+      // // Extract relevant information from the filtered reviews
+      // const extractedReviews = filteredReviews.map((review) => {
+      //   const {
+      //     Description,
+      //     Rating,
+      //     expand: {
+      //       product_id: { Category, product_name },
+      //       username: { name: username },
+      //     },
+      //   } = review;
+      
+      //   return {
+      //     Description,
+      //     Rating,
+      //     Category,
+      //     product_name,
+      //     username,
+      //   };
+      // });
+      
+      // // Print the extracted reviews
+      // extractedReviews.forEach((review) => {
+      //   console.log("Review:");
+      //   console.log("Description:", review.Description);
+      //   console.log("Rating:", review.Rating);
+      //   console.log("Category:", review.Category);
+      //   console.log("Product Name:", review.product_name);
+      //   console.log("Username:", review.username);
+      //   console.log("-----------------------------");
+      // });
+      // console.log("extractedReviews=",extractedReviews);
+      
+      setReviews(records)
+    } catch (error) {
+      console.log("Error retrieving data:", error);
+      throw error;
+    }
+  }
